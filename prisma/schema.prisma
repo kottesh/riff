@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -7,41 +8,156 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Artist {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
-  genres     String[]
-  popularity Int
-  imageUrl   String?  // Cloudinary URL for artist image
-  albums     Album[]  @relation("ArtistToAlbum")
-  tracks     Track[]  @relation("ArtistToTrack")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model User {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String       @unique
+  password        String
+  image           String?
+  emailVerified   DateTime?
+  verificationToken VerificationToken?
+  playlists       Playlist[]
+  likedSongs      LikedSong[]
+  history         PlayHistory[]
+  following       UserFollowingArtist[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
-model Album {
+model Artist {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  artist      Artist   @relation("ArtistToAlbum", fields: [artistId], references: [id])
-  artistId    String   @db.ObjectId
-  releaseDate DateTime
-  genres      String[]
-  coverUrl    String?  // Cloudinary URL for album cover
-  tracks      Track[]  @relation("AlbumToTrack")
+  name        String
+  bio         String?
+  image       String?
+  tracks      Track[]
+  albums      Album[]
+  followers   UserFollowingArtist[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Track {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  album        Album    @relation("AlbumToTrack", fields: [albumId], references: [id])
-  albumId      String   @db.ObjectId
-  artists      Artist[] @relation("ArtistToTrack")
-  duration     Int
-  popularity   Int
-  audioUrl     String   // cloudinary URL for audio file
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  duration       Int
+  fileUrl        String
+  coverUrl       String?
+  artistId       String       @db.ObjectId
+  artist         Artist       @relation(fields: [artistId], references: [id])
+  albumId        String?      @db.ObjectId
+  album          Album?       @relation(fields: [albumId], references: [id])
+  playlistTracks PlaylistTrack[]
+  likedBy        LikedSong[]
+  playHistory    PlayHistory[]
+  trackGenres    TrackGenre[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([title])
+  @@index([artistId])
+  @@index([albumId])
 }
 
+model Album {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  coverUrl    String?
+  releaseDate DateTime
+  artistId    String   @db.ObjectId
+  artist      Artist   @relation(fields: [artistId], references: [id])
+  tracks      Track[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([title])
+  @@index([artistId])
+}
+
+model Playlist {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  coverUrl    String?
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks      PlaylistTrack[]
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, name])
+}
+
+model PlaylistTrack {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  playlistId String   @db.ObjectId
+  trackId    String   @db.ObjectId
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  addedAt    DateTime @default(now())
+
+  @@unique([playlistId, trackId])
+}
+
+model LikedSong {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  trackId   String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, trackId])
+  @@index([userId])
+  @@index([trackId])
+}
+
+model PlayHistory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  trackId   String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  playedAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([trackId])
+}
+
+model Genre {
+  id     String       @id @default(auto()) @map("_id") @db.ObjectId
+  name   String       @unique
+  tracks TrackGenre[]
+}
+
+model TrackGenre {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  trackId String @db.ObjectId
+  genreId String @db.ObjectId
+  track   Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@unique([trackId, genreId])
+}
+
+model UserFollowingArtist {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  artistId String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, artistId])
+}
+
+model VerificationToken {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  token   String   @unique
+  expires DateTime
+  userId  String   @db.ObjectId
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
