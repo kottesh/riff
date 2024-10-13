@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  genres     String[]
+  popularity Int
+  imageUrl   String?  // Cloudinary URL for artist image
+  albums     Album[]  @relation("ArtistToAlbum")
+  tracks     Track[]  @relation("ArtistToTrack")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Album {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  artist      Artist   @relation("ArtistToAlbum", fields: [artistId], references: [id])
+  artistId    String   @db.ObjectId
+  releaseDate DateTime
+  genres      String[]
+  coverUrl    String?  // Cloudinary URL for album cover
+  tracks      Track[]  @relation("AlbumToTrack")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Track {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  album        Album    @relation("AlbumToTrack", fields: [albumId], references: [id])
+  albumId      String   @db.ObjectId
+  artists      Artist[] @relation("ArtistToTrack")
+  duration     Int
+  popularity   Int
+  audioUrl     String   // cloudinary URL for audio file
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
