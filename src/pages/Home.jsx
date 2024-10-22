@@ -14,7 +14,7 @@ export default function Home() {
         <main className="flex-1 overflow-y-auto  mb-0 rounded-md p-3">
           <AppRoutes />
         </main>
-          {/* <Index /> */}
+          <Index />
       </BrowserRouter>
     </div>
   );

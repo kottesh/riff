@@ -10,8 +10,8 @@ body{
   height : 100%;
 }
 #root {
-  /*width: 100vw;  /* Full viewport width */
-  /*height: 100%;  Full viewport height */
+  /* width: 100vw;
+  height: 100vh; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;

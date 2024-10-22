@@ -1,4 +1,6 @@
 import React from "react";
+import Vibrant from "node-vibrant";
+import { getArtistById } from "../../services/dataAPI";
 import {
   BsFillPlayCircleFill,
   BsFillPauseCircleFill,
@@ -9,7 +11,7 @@ import {
 import { useRef, useEffect, useState } from "react";
 
 export default function Player({
-  refi,
+  audioref,
   isplaying,
   setisplaying,
   currentSong,
@@ -17,6 +19,32 @@ export default function Player({
   songs,
 }) {
   const refe = useRef();
+  const [ themeColor, setThemeColor ] = useState("#ffffff")
+  const [ artist, setArtist ] =useState([]);
+  useEffect(() => {
+    // Extract the vibrant color from the album cover
+    if (currentSong.coverUrl) {
+      Vibrant.from(currentSong.coverUrl)
+        .getPalette()
+        .then((palette) => {
+          // You can use palette.Vibrant, palette.DarkVibrant, etc.
+          setThemeColor(palette.Vibrant.hex); // Set the theme to the vibrant color
+        })
+        .catch((err) => {
+          console.error("Vibrant color extraction failed:", err);
+        });
+    }
+  }, [currentSong.coverUrl]);
+
+  // useEffect(()=>{
+  //     if(currentSong.artistIds){
+  //       currentSong.artistIds.map(async(id)=>{
+  //         const data = await getArtistById(id);
+  //         setArtist(...artist,data.name);
+  //       })
+  //     }
+  // },[currentSong.artistIds]);
+  
   const PlayPause = ()=>
     {
       setisplaying(!isplaying);
@@ -29,7 +57,7 @@ export default function Player({
       const offset = e.nativeEvent.offsetX;
   
       const divprogress = offset / width * 100;
-      refi.current.currentTime = divprogress / 100 * currentSong.length;
+      audioref.current.currentTime = divprogress / 100 * currentSong.length;
   
     }
   
@@ -44,7 +72,11 @@ export default function Player({
       {
         setCurrentSong(songs[index - 1])
       }
-      refi.current.currentTime = 0;
+      audioref.current.currentTime = 0;
+      setisplaying(true);
+      setTimeout(() => {
+        audioref.current.play();
+      }, 0);
       
     }
 
@@ -60,35 +92,39 @@ export default function Player({
       {
         setCurrentSong(songs[index + 1])
       }
-      refi.current.currentTime = 0;
+      audioref.current.currentTime = 0;
+      setisplaying(true);
+      setTimeout(() => {
+        audioref.current.play();
+      }, 0);
       
     }
   return (
-    <div className="w-full h-20 p-4 text-gray-300 flex flex-row items-center">
-      <img className="w-10 h-10 mr-4" />
-      <div className="text-gray-200">
-        <h1 className="text-inherit title">{currentSong.title}</h1>
+    <div className="w-full h-20 p-2 text-gray-300 flex flex-row items-center">
+      <img className="w-10 h-10 mr-2 rounded-md border border-black" src={currentSong.coverUrl}/>
+      <div className="text-gray-200 w-15">
+        <h1 className="text-base font-medium title">{currentSong.title}</h1>
+        <p className="text-xs opacity-30">{artist[0]}</p>
       </div>
-      <div className="flex flex-col w-96 items-center ml-20 justify-center">
+      <div className="flex flex-col w-96 items-center ml-14 justify-center">
         <div className="text-inherit flex items-center">
-          <div className="btn_action text-2xl mx-4 cursor-pointer hover:text-white">
+          <div className="text-2xl my-3 cursor-pointer items-center hover:text-white flex flex-row">
             <BsFillSkipStartCircleFill
-              className="btn_action"
+              className="mr-3"
               onClick={skipBack}
             />
             {isplaying ? (
               <BsFillPauseCircleFill
-                className="btn_action pp"
+                className="mr-3 size-9"
                 onClick={PlayPause}
               />
             ) : (
               <BsFillPlayCircleFill
-                className="btn_action pp"
+                className="mr-3 size-9"
                 onClick={PlayPause}
               />
             )}
             <BsFillSkipEndCircleFill
-              className="btn_action"
               onClick={skiptoNext}
             />
           </div>
@@ -98,11 +134,11 @@ export default function Player({
           <div
             className="min-w-full bg-gray-600 bg-opacity-75 h-1.5 rounded-full cursor-pointer"
             onClick={checkWidth}
-            ref={refi}
+            ref={refe}
           >
             <div
-              className=" h-full bg-green-600 rounded-full w-0"
-              style={{ width: `${currentSong.progress + "%"}` }}
+              className=" h-full hover:bg-white rounded-full w-0"
+              style={{ width: `${currentSong.progress + "%"}`,backgroundColor:themeColor }}
             ></div>
           </div>
         </div>

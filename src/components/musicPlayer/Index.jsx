@@ -2,49 +2,43 @@ import React, { useEffect, useRef } from "react";
 import Player from "./Player";
 import { useState } from "react";
 import { getAllsongs } from "../../services/dataAPI";
+import {songData} from './sampleSongData'
 export default function musicPlayer() {
-    const [songs, setSongs] = useState([]);
+    const [songs, setSongs] = useState(songData);
     const [isplaying, setisplaying] = useState(false);
-    const [currentSong, setCurrentSong] = useState({ title : "", url : ""});
-    const ref = useRef(null);
+    const [currentSong, setCurrentSong] = useState(songData[0]);
+    
+    const audioref = useRef();
+    // useEffect(() => {
+    //   const fetchSongs = async () => {
+    //     try {
+    //       const data = await getAllsongs();
+    //       setSongs(data);
+    //         setCurrentSong({
+    //           title : data[0].title,
+    //           url : data[0].fileUrl
+    //         });
+    //       console.log("Fetched song data : ", data);
+    //     } catch (error) {
+    //       console.log("Error in API call (songs): ", error.message);
+    //     }
+    //   };
+        
+    //   fetchSongs();
+    // },[]);
     useEffect(() => {
-      const fetchSongs = async () => {
-        try {
-          const data = await getAllsongs();
-          setSongs(data);
-            setCurrentSong({
-              title : data[0].title,
-              url : data[0].fileUrl
-            });
-          console.log("Fetched song data : ", data);
-        } catch (error) {
-          console.log("Error in API call (songs): ", error.message);
-        }
-      };
-      fetchSongs();
-    },[]);
-    useEffect(() => {
-      if (currentSong && ref.current) {
+      if (currentSong && audioref.current) {
         if (isplaying) {
-          ref.current.play();
+          audioref.current.play();
         } else {
-          ref.current.pause();
+          audioref.current.pause();
         }
       }
-  
-      // Cleanup function to pause audio on component unmount
-      return () => {
-        if (ref.current) {
-          ref.current.pause();
-        }
-      };
     }, [isplaying, currentSong]);
-  
-  console.log("Current song:",currentSong);
 
   const onPlaying = () => {
-    const duration = ref.current.duration;
-    const ct = ref.current.currentTime;
+    const duration = audioref.current.duration;
+    const ct = audioref.current.currentTime;
 
     setCurrentSong({
       ...currentSong,
@@ -54,18 +48,18 @@ export default function musicPlayer() {
   };
   
   return (
-    <div className="fixed glass w-fit z-50 h-16 bottom-5 p-6 ml-[25%] items-center flex flex-row">
+    <div className="fixed glass w-fit z-50 h-20 bottom-5 p-6 ml-[25%] items-center flex flex-row">
       <audio
-        src={currentSong.url}
-        ref={ref}
+        src={currentSong.fileUrl}
+        ref={audioref}
         onTimeUpdate={onPlaying}
       ></audio>
       <Player
-        songs={songs}
+        songs={songData}
         setSongs={setSongs}
         isplaying={isplaying}
         setisplaying={setisplaying}
-        refi={ref}
+        audioref={audioref}
         currentSong={currentSong}
         setCurrentSong={setCurrentSong}
       />
