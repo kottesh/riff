@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "../AppRoutes";
 import Content from "../components/Content";
 import Player from "../components/musicPlayer/Player";
-import Index from "../components/musicPlayer/Index"
+import Index from "../components/musicPlayer/Index";
 import PlayerN from "../components/musicPlayer/PlayerN";
 export default function Home() {
   return (
@@ -12,11 +12,10 @@ export default function Home() {
       <BrowserRouter>
         <Sidebar />
         <main className="flex-1 overflow-y-auto  mb-0 rounded-md p-3">
-          <AppRoutes/>
-          <Index/>
+          <AppRoutes />
         </main>
+          {/* <Index /> */}
       </BrowserRouter>
-      
     </div>
   );
 }
