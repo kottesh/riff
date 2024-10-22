@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,
+body{
+  margin: 0;
+  padding: 0;
+  height : 100%;
+}
+#root {
+  /*width: 100vw;  /* Full viewport width */
+  /*height: 100%;  Full viewport height */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding : 0;
+  background : #8e7cc3/*rgba(24, 27, 34, 255)*/; 
+}
+
+.music-card {
+  @apply bg-comp w-40 md:w-40 h-56 hover:bg-cardhover m-2  p-4 rounded-lg hover:shadow-2xl shadow-md flex flex-col transition duration-300 ease-in-out items-center;
+}
+
+.music-card img {
+  @apply w-full h-40 object-cover rounded-md mb-2 border border-pur;
+}
+
+.music-card:hover img {
+  @apply scale-105;
+}
+
+.music-card h3 {
+  @apply text-base font-medium text-white;
+}
+
+.music-card:hover h3{
+  @apply text-lg;
+}
+
+.music-card p.artist-name {
+  @apply text-gray-400 text-sm;
+}
+
+.music-card:hover p.artist-name {
+  @apply text-base;
+}
+
+.cat-btn{
+  @apply h-fit w-fit p-2 px-4 mr-3 rounded-2xl hover:bg-pur border border-pur text-white text-sm font-medium text-nowrap
+}
+
+.sea-song{
+  @apply h-fit p-2  flex flex-row text-white rounded-2xl;
+}
+
+.sea-song img{
+  @apply  w-11 h-11 object-cover rounded-md mb-2 border border-pur;
+}
+
+.sea-song div{
+  @apply text-sm w-fit mx-4 text-left ;
+}
+
+.sea-song p{
+  @apply first:text-base; 
+
+}
+  .glass{
+    @apply bg-[rgba(150,144,168,0.18)] rounded-full text-white font-semibold;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    
+  }
+::-webkit-scrollbar {
+  width: 4px;
+  height: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(254, 253, 254, 0.2);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, and Opera */
+}
+
+
+.rhap_container {
+  @apply flex flex-row justify-between items-center w-full; /* Apply Tailwind classes */
+}
+
+.rhap_main {
+  @apply flex flex-row items-center space-x-4; /* Override default column layout */
+}
+
+.rhap_progress-section,
+.rhap_controls-section {
+  @apply flex flex-row items-center; /* Row layout for time and controls */
+}
+
+.rhap_play-status--paused .rhap_progress-bar {
+  background-color: #ff6b6b; 
+  opacity: 0.5; 
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  
+}
+
+/* ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+/* For Firefox 
+* {
+  scrollbar-color: transparent auto;
+}*/
+
+/* For Internet Explorer and Edge 
+* {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+} */
