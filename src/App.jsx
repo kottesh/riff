@@ -21,6 +21,10 @@ const App = () => {
                             <Route path="/search" element={<Search />} />
                             <Route path="/album/:id" element={<Album />} />
                             <Route
+                                path="/artist/:id"
+                                element={<div>this is the artist page.</div>}
+                            ></Route>
+                            <Route
                                 path="/library"
                                 element={<div>Library Page</div>}
                             />

@@ -32,6 +32,15 @@ export const searchAPI = {
     },
 };
 
+export async function getAlbumById(id) {
+    try {
+        const response = await api.get(`api/album/${id}`);
+        return response;
+    } catch (error) {
+        console.log("Error in fetching album by id:", error.message);
+    }
+}
+
 export async function getAllsongs() {
     try {
         const response = await fetch(
@@ -77,17 +86,5 @@ export async function getArtistById(id) {
         return data;
     } catch (error) {
         console.log("Error in fetching artist by id:", error.message);
-    }
-}
-
-export async function getAlbumById(id) {
-    try {
-        const response = await fetch(
-            `${import.meta.VITE_BACKEND_URL}/api/album/${id}`
-        );
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.log("Error in fetching album by id:", error.message);
     }
 }
