@@ -14,116 +14,307 @@ const usePlayerStore = create(
             isShuffled: false,
             repeatMode: "OFF", // OFF, ONE, ALL
             shuffledQueue: [],
+            isLoading: false,
             audioElement: typeof window !== "undefined" ? new Audio() : null,
 
             initializeAudio: () => {
                 if (typeof window === "undefined") return;
                 const audio = get().audioElement;
+                if (!audio) return;
 
-                audio.addEventListener("timeupdate", () => {
+                // Clean up existing listeners to prevent memory leaks
+                const cleanupListeners = () => {
+                    audio.removeEventListener("timeupdate", timeUpdateHandler);
+                    audio.removeEventListener(
+                        "loadedmetadata",
+                        metadataHandler
+                    );
+                    audio.removeEventListener("ended", endedHandler);
+                    audio.removeEventListener("error", errorHandler);
+                    audio.removeEventListener("canplaythrough", canPlayHandler);
+                };
+
+                // Define handlers
+                const timeUpdateHandler = () =>
                     set({ progress: audio.currentTime });
-                });
+                const metadataHandler = () => set({ duration: audio.duration });
+                const endedHandler = () => get().handleTrackEnd();
+                const errorHandler = (e) => {
+                    console.error("Audio error:", e?.target?.error);
+                    set({ isLoading: false, isPlaying: false });
+                };
+                const canPlayHandler = () => set({ isLoading: false });
 
-                audio.addEventListener("loadedmetadata", () => {
-                    set({ duration: audio.duration });
-                });
+                // Clean up and add new listeners
+                cleanupListeners();
 
-                audio.addEventListener("ended", () => {
-                    const store = get();
-                    store.handleTrackEnd();
-                });
+                audio.addEventListener("timeupdate", timeUpdateHandler);
+                audio.addEventListener("loadedmetadata", metadataHandler);
+                audio.addEventListener("ended", endedHandler);
+                audio.addEventListener("error", errorHandler);
+                audio.addEventListener("canplaythrough", canPlayHandler);
+
+                // Preserve volume on initialization
+                audio.volume = get().volume;
+
+                return cleanupListeners; // Return cleanup function for component unmount
             },
 
-            playTrack: (track) => {
-                const state = get();
-                const audio = state.audioElement;
+            handleTrackEnd: async () => {
+                const store = get();
+                if (!store.audioElement) return;
 
-                // If we're already playing this track, just toggle play/pause
-                if (state.currentTrack?.id === track.id) {
-                    if (state.isPlaying) {
+                try {
+                    if (store.repeatMode === "ONE") {
+                        store.audioElement.currentTime = 0;
+                        await store.audioElement.play();
+                        set({ progress: 0 });
+                        return;
+                    }
+
+                    const queue = store.isShuffled
+                        ? store.shuffledQueue
+                        : store.queue;
+                    const nextIndex = store.queueIndex + 1;
+
+                    if (nextIndex < queue.length) {
+                        await store.playTrackAt(nextIndex);
+                    } else if (store.repeatMode === "ALL" && queue.length > 0) {
+                        await store.playTrackAt(0);
+                    } else {
+                        store.cleanup();
+                    }
+                } catch (error) {
+                    console.error("Error handling track end:", error);
+                    store.cleanup();
+                }
+            },
+
+            playTrack: async (track) => {
+                const store = get();
+                const audio = store.audioElement;
+                if (!audio || !track?.fileUrl) return;
+
+                try {
+                    set({ isLoading: true });
+
+                    // Handle same track toggle
+                    if (store.currentTrack?.id === track.id) {
+                        if (store.isPlaying) {
+                            audio.pause();
+                            set({ isPlaying: false, isLoading: false });
+                        } else {
+                            await audio.play();
+                            set({ isPlaying: true, isLoading: false });
+                        }
+                        return;
+                    }
+
+                    // Prepare audio for new track
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.src = track.fileUrl;
+                    await audio.load();
+
+                    // Update queue management
+                    let newQueue = [...store.queue];
+                    if (!newQueue.find((t) => t.id === track.id)) {
+                        newQueue.push(track);
+                    }
+
+                    const newIndex = newQueue.findIndex(
+                        (t) => t.id === track.id
+                    );
+
+                    // Handle shuffle state
+                    let newShuffledQueue = store.shuffledQueue;
+                    if (store.isShuffled) {
+                        const remainingTracks = newQueue
+                            .filter((t) => t.id !== track.id)
+                            .sort(() => Math.random() - 0.5);
+                        newShuffledQueue = [track, ...remainingTracks];
+                    }
+
+                    // Update store state before playing
+                    set({
+                        currentTrack: track,
+                        queue: newQueue,
+                        shuffledQueue: newShuffledQueue,
+                        queueIndex: newIndex,
+                    });
+
+                    // Start playback
+                    await audio.play();
+                    set({ isPlaying: true, isLoading: false });
+                } catch (error) {
+                    console.error("Error playing track:", error);
+                    store.cleanup();
+                }
+            },
+
+            playTrackAt: async (index) => {
+                const store = get();
+                const queue = store.isShuffled
+                    ? store.shuffledQueue
+                    : store.queue;
+
+                if (index >= 0 && index < queue.length) {
+                    try {
+                        set({ queueIndex: index });
+                        await store.playTrack(queue[index]);
+                    } catch (error) {
+                        console.error("Error playing track at index:", error);
+                        store.cleanup();
+                    }
+                }
+            },
+
+            playNext: async () => {
+                const store = get();
+                const queue = store.isShuffled
+                    ? store.shuffledQueue
+                    : store.queue;
+                const nextIndex = store.queueIndex + 1;
+                const wasPlaying = store.isPlaying;
+
+                try {
+                    if (nextIndex < queue.length) {
+                        await store.playTrackAt(nextIndex);
+                    } else if (store.repeatMode === "ALL" && queue.length > 0) {
+                        await store.playTrackAt(0);
+                    } else {
+                        store.cleanup();
+                    }
+
+                    // Restore playing state if needed
+                    if (wasPlaying && store.audioElement && !store.isPlaying) {
+                        await store.audioElement.play();
+                        set({ isPlaying: true });
+                    }
+                } catch (error) {
+                    console.error("Error playing next track:", error);
+                    store.cleanup();
+                }
+            },
+
+            playPrevious: async () => {
+                const store = get();
+                try {
+                    if (store.progress > 3) {
+                        store.seekTo(0);
+                    } else {
+                        const prevIndex = store.queueIndex - 1;
+                        if (prevIndex >= 0) {
+                            await store.playTrackAt(prevIndex);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error playing previous track:", error);
+                    store.cleanup();
+                }
+            },
+
+            togglePlay: async () => {
+                const store = get();
+                const audio = store.audioElement;
+                if (!audio || !store.currentTrack) return;
+
+                try {
+                    if (store.isPlaying) {
                         audio.pause();
                         set({ isPlaying: false });
                     } else {
-                        audio.play().catch(console.error);
+                        await audio.play();
                         set({ isPlaying: true });
                     }
-                    return;
+                } catch (error) {
+                    console.error("Error toggling play:", error);
+                    store.cleanup();
                 }
-
-                // Stop current track if any
-                if (state.currentTrack) {
-                    audio.pause();
-                }
-
-                // Set up new track
-                audio.src = track.fileUrl;
-                audio.volume = state.volume;
-
-                // Add track to queue if it's not already there
-                const newQueue = [...state.queue];
-                if (!newQueue.find((t) => t.id === track.id)) {
-                    newQueue.push(track);
-                }
-
-                // Play the new track
-                audio
-                    .play()
-                    .then(() => {
-                        set({
-                            currentTrack: track,
-                            isPlaying: true,
-                            queue: newQueue,
-                            queueIndex: newQueue.findIndex(
-                                (t) => t.id === track.id
-                            ),
-                        });
-                    })
-                    .catch((error) => {
-                        console.error("Error playing track:", error);
-                        set({
-                            currentTrack: null,
-                            isPlaying: false,
-                        });
-                    });
             },
 
-            // Add the missing reorderQueue function
-            reorderQueue: (sourceIndex, destinationIndex) => {
+            setVolume: (volume) => {
+                const store = get();
+                const normalizedVolume = Math.max(0, Math.min(1, volume));
+                if (store.audioElement) {
+                    store.audioElement.volume = normalizedVolume;
+                    set({ volume: normalizedVolume });
+                }
+            },
+
+            seekTo: (time) => {
+                const store = get();
+                const audio = store.audioElement;
+                if (audio && time >= 0 && time <= store.duration) {
+                    audio.currentTime = time;
+                    set({ progress: time });
+                }
+            },
+
+            addToQueue: (tracks) => {
+                const tracksArray = Array.isArray(tracks) ? tracks : [tracks];
+
                 set((state) => {
-                    const newQueue = [...state.queue];
-                    const [removed] = newQueue.splice(sourceIndex, 1);
-                    newQueue.splice(destinationIndex, 0, removed);
-
-                    // If shuffle is on, we need to update the shuffled queue too
+                    const newQueue = [...state.queue, ...tracksArray];
                     let newShuffledQueue = state.shuffledQueue;
+
                     if (state.isShuffled) {
-                        newShuffledQueue = [...state.shuffledQueue];
-                        const [removedShuffled] = newShuffledQueue.splice(
-                            sourceIndex,
-                            1
-                        );
-                        newShuffledQueue.splice(
-                            destinationIndex,
-                            0,
-                            removedShuffled
-                        );
+                        if (state.currentTrack) {
+                            // Maintain current track position in shuffled queue
+                            const remainingTracks = newQueue
+                                .filter((t) => t.id !== state.currentTrack.id)
+                                .sort(() => Math.random() - 0.5);
+                            newShuffledQueue = [
+                                state.currentTrack,
+                                ...remainingTracks,
+                            ];
+                        } else {
+                            newShuffledQueue = [...newQueue].sort(
+                                () => Math.random() - 0.5
+                            );
+                        }
                     }
 
-                    // Update queue index if necessary
-                    let newQueueIndex = state.queueIndex;
-                    if (sourceIndex === state.queueIndex) {
-                        newQueueIndex = destinationIndex;
-                    } else if (
-                        sourceIndex < state.queueIndex &&
-                        destinationIndex >= state.queueIndex
-                    ) {
-                        newQueueIndex--;
-                    } else if (
-                        sourceIndex > state.queueIndex &&
-                        destinationIndex <= state.queueIndex
-                    ) {
-                        newQueueIndex++;
+                    return { queue: newQueue, shuffledQueue: newShuffledQueue };
+                });
+            },
+
+            removeFromQueue: (trackId) => {
+                if (!trackId) return;
+
+                set((state) => {
+                    // Find track indices
+                    const queueIndex = state.queue.findIndex(
+                        (t) => t.id === trackId
+                    );
+                    if (queueIndex === -1) return state;
+
+                    // Create new queues without the track
+                    const newQueue = state.queue.filter(
+                        (t) => t.id !== trackId
+                    );
+                    const newShuffledQueue = state.isShuffled
+                        ? state.shuffledQueue.filter((t) => t.id !== trackId)
+                        : state.shuffledQueue;
+
+                    // Handle current track removal
+                    if (trackId === state.currentTrack?.id) {
+                        get().cleanup();
+                        if (newQueue.length > 0) {
+                            // Try to play next track
+                            const nextTrack =
+                                newQueue[
+                                    Math.min(queueIndex, newQueue.length - 1)
+                                ];
+                            get().playTrack(nextTrack);
+                        }
                     }
+
+                    // Update queue index
+                    const newQueueIndex =
+                        queueIndex < state.queueIndex
+                            ? Math.max(0, state.queueIndex - 1)
+                            : Math.min(state.queueIndex, newQueue.length - 1);
 
                     return {
                         queue: newQueue,
@@ -133,180 +324,39 @@ const usePlayerStore = create(
                 });
             },
 
-            removeFromQueue: (trackId) => {
-                set((state) => {
-                    const queueIndex = state.queue.findIndex(
-                        (track) => track.id === trackId
-                    );
-                    if (queueIndex === -1) return state;
-
-                    const newQueue = state.queue.filter(
-                        (track) => track.id !== trackId
-                    );
-
-                    let newShuffledQueue = state.shuffledQueue;
-                    if (state.isShuffled) {
-                        newShuffledQueue = state.shuffledQueue.filter(
-                            (track) => track.id !== trackId
-                        );
-                    }
-
-                    // adjust queue index if necessary
-                    let newQueueIndex = state.queueIndex;
-                    if (queueIndex < state.queueIndex) {
-                        newQueueIndex--;
-                    } else if (queueIndex === state.queueIndex) {
-                        // if we're removing the current track, play the next one
-                        if (newQueue.length > 0) {
-                            const nextTrack =
-                                newQueue[newQueueIndex] || newQueue[0];
-                            get().playTrack(nextTrack);
-                        } else {
-                            get().cleanup();
-                        }
-                    }
-
-                    return {
-                        queue: newQueue,
-                        shuffledQueue: newShuffledQueue,
-                        queueIndex: Math.min(
-                            newQueueIndex,
-                            newQueue.length - 1
-                        ),
-                    };
-                });
-            },
-
-            handleTrackEnd: () => {
-                const store = get();
-                const queue = store.isShuffled
-                    ? store.shuffledQueue
-                    : store.queue;
-
-                if (store.repeatMode === "ONE") {
-                    store.seekTo(0);
-                    store.audioElement.play().catch(console.error);
-                } else if (
-                    store.repeatMode === "ALL" ||
-                    store.queueIndex < queue.length - 1
-                ) {
-                    store.playNext();
-                } else {
-                    set({ isPlaying: false });
-                }
-            },
-
-            playTrackAt: (index) => {
-                const store = get();
-                const queue = store.isShuffled
-                    ? store.shuffledQueue
-                    : store.queue;
-                const track = queue[index];
-
-                if (track) {
-                    set({ queueIndex: index });
-                    store.playTrack(track);
-                }
-            },
-
-            togglePlay: () => {
-                const store = get();
-                const audio = store.audioElement;
-
-                if (audio) {
-                    if (store.isPlaying) {
-                        audio.pause();
-                    } else {
-                        audio.play().catch(console.error);
-                    }
-                    set({ isPlaying: !store.isPlaying });
-                }
-            },
-
-            playNext: () => {
-                const store = get();
-                const queue = store.isShuffled
-                    ? store.shuffledQueue
-                    : store.queue;
-                const nextIndex = store.queueIndex + 1;
-
-                if (nextIndex < queue.length) {
-                    store.playTrackAt(nextIndex);
-                } else if (store.repeatMode === "ALL") {
-                    store.playTrackAt(0);
-                }
-
-            },
-
-            playPrevious: () => {
-                const store = get();
-                if (store.progress > 3) {
-                    store.seekTo(0);
-                } else {
-                    const prevIndex = store.queueIndex - 1;
-                    if (prevIndex >= 0) {
-                        store.playTrackAt(prevIndex);
-                    }
-                }
-            },
-
-            setVolume: (volume) => {
-                const store = get();
-                if (store.audioElement) {
-                    store.audioElement.volume = volume;
-                    set({ volume });
-                }
-            },
-
-            seekTo: (time) => {
-                const audio = get().audioElement;
-                if (audio) {
-                    audio.currentTime = time;
-                    set({ progress: time });
-                }
-            },
-
-            addToQueue: (tracks) => {
-                set((state) => ({
-                    queue: [
-                        ...state.queue,
-                        ...(Array.isArray(tracks) ? tracks : [tracks]),
-                    ],
-                }));
-            },
-
-            clearQueue: () => {
-                set({ queue: [], queueIndex: 0 });
-                const store = get();
-                if (store.currentTrack) {
-                    set({ queue: [store.currentTrack] });
-                }
-            },
-
             toggleShuffle: () => {
                 const store = get();
                 const newIsShuffled = !store.isShuffled;
 
                 if (newIsShuffled) {
-                    // Create shuffled queue
-                    const currentTrack = store.queue[store.queueIndex];
+                    // Enable shuffle
+                    const currentTrack = store.currentTrack;
                     const remainingTracks = store.queue
-                        .filter((_, i) => i !== store.queueIndex)
+                        .filter((track) => track.id !== currentTrack?.id)
                         .sort(() => Math.random() - 0.5);
 
                     set({
                         isShuffled: true,
-                        shuffledQueue: [currentTrack, ...remainingTracks],
-                        queueIndex: 0,
+                        shuffledQueue: currentTrack
+                            ? [currentTrack, ...remainingTracks]
+                            : remainingTracks,
+                        queueIndex: currentTrack ? 0 : store.queueIndex,
                     });
                 } else {
-                    // Restore original queue
+                    // Disable shuffle
                     const currentTrack = store.currentTrack;
+                    if (!currentTrack) {
+                        set({ isShuffled: false });
+                        return;
+                    }
+
+                    const newIndex = store.queue.findIndex(
+                        (track) => track.id === currentTrack.id
+                    );
+
                     set({
                         isShuffled: false,
-                        queueIndex: store.queue.findIndex(
-                            (track) => track.id === currentTrack?.id
-                        ),
+                        queueIndex: Math.max(0, newIndex),
                     });
                 }
             },
@@ -322,13 +372,26 @@ const usePlayerStore = create(
                 const store = get();
                 if (store.audioElement) {
                     store.audioElement.pause();
+                    store.audioElement.currentTime = 0;
                     store.audioElement.src = "";
                 }
                 set({
-                    currentTrack: null,
                     isPlaying: false,
+                    isLoading: false,
                     progress: 0,
                     duration: 0,
+                });
+            },
+
+            clearQueue: () => {
+                const store = get();
+                store.cleanup();
+                set({
+                    queue: [],
+                    shuffledQueue: [],
+                    queueIndex: 0,
+                    currentTrack: null,
+                    isPlaying: false,
                 });
             },
         }),

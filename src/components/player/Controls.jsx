@@ -8,6 +8,7 @@ import {
     Pause,
     Repeat,
     Repeat1,
+    Loader,
 } from "lucide-react";
 
 export const Controls = () => {
@@ -15,23 +16,13 @@ export const Controls = () => {
         isPlaying,
         isShuffled,
         repeatMode,
+        isLoading,
         togglePlay,
         playNext,
         playPrevious,
         toggleShuffle,
-        cycleRepeatMode,
+        toggleRepeatMode,
     } = usePlayerStore();
-
-    const renderRepeatIcon = () => {
-        switch (repeatMode) {
-            case "ONE":
-                return <Repeat1 className="w-5 h-5 text-white" />;
-            case "ALL":
-                return <Repeat className="w-5 h-5 text-white" />;
-            default:
-                return <Repeat className="w-5 h-5 text-gray-400" />;
-        }
-    };
 
     return (
         <div className="flex items-center justify-center gap-6">
@@ -42,6 +33,7 @@ export const Controls = () => {
                         : "text-neutral-400 hover:text-white"
                 }`}
                 onClick={toggleShuffle}
+                disabled={isLoading}
             >
                 <Shuffle className="w-5 h-5" />
             </button>
@@ -49,15 +41,19 @@ export const Controls = () => {
             <button
                 className="p-2 rounded-full text-neutral-400 hover:text-white transition"
                 onClick={playPrevious}
+                disabled={isLoading}
             >
                 <SkipBack className="w-5 h-5" />
             </button>
 
             <button
-                className="p-3 rounded-full bg-white hover:scale-105 transition"
+                className="p-3 rounded-full bg-white hover:scale-105 transition disabled:opacity-50 disabled:hover:scale-100"
                 onClick={togglePlay}
+                disabled={isLoading}
             >
-                {isPlaying ? (
+                {isLoading ? (
+                    <Loader className="w-5 h-5 text-black animate-spin" />
+                ) : isPlaying ? (
                     <Pause className="w-5 h-5 text-black" />
                 ) : (
                     <Play className="w-5 h-5 text-black" />
@@ -67,6 +63,7 @@ export const Controls = () => {
             <button
                 className="p-2 rounded-full text-neutral-400 hover:text-white transition"
                 onClick={playNext}
+                disabled={isLoading}
             >
                 <SkipForward className="w-5 h-5" />
             </button>
@@ -77,7 +74,8 @@ export const Controls = () => {
                         ? "text-green-500"
                         : "text-neutral-400 hover:text-white"
                 }`}
-                onClick={cycleRepeatMode}
+                onClick={toggleRepeatMode}
+                disabled={isLoading}
             >
                 {repeatMode === "ONE" ? (
                     <Repeat1 className="w-5 h-5" />

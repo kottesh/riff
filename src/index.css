@@ -1,6 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
 
 html,
 body {
@@ -8,14 +19,13 @@ body {
     padding: 0;
     height: 100%;
 }
+
 #root {
-  /* width: 100vw;
-  height: 100vh; */
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding : 0;
-  background : #8e7cc3/*rgba(24, 27, 34, 255)*/; 
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: #8e7cc3;
 }
 
 .music-card {
@@ -119,17 +129,3 @@ body {
     opacity: 0.5;
     transition: background-color 0.3s ease, opacity 0.3s ease;
 }
-
-/* ::-webkit-scrollbar-thumb {
-  background-color: transparent;
-}
-
-/* For Firefox 
-* {
-  scrollbar-color: transparent auto;
-}*/
-
-/* For Internet Explorer and Edge 
-* {
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-} */

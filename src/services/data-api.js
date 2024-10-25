@@ -9,24 +9,26 @@ export const searchAPI = {
     },
 
     searchArtists: async (query) => {
-        const { artists } = await api.get(
-            `/api/song?search=${encodeURIComponent(query)}`
+        const artists = await api.get(
+            `/api/artist/search?query=${encodeURIComponent(query)}`
         );
-        return artists || [];
+
+        console.log(artists);
+        return artists.data || [];
     },
 
     searchAlbums: async (query) => {
-        const { albums } = await api.get(
-            `/api/song?search=${encodeURIComponent(query)}`
+        const albums = await api.get(
+            `/api/album/search?query=${encodeURIComponent(query)}`
         );
-        return albums || [];
+        return albums.data || [];
     },
 
     searchGenres: async (query) => {
-        const { genres } = await api.get(
-            `/api/song?search=${encodeURIComponent(query)}`
+        const genres = await api.get(
+            `/api/genre?search=${encodeURIComponent(query)}`
         );
-        return genres || [];
+        return genres.data || [];
     },
 };
 
