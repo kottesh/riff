@@ -1,5 +1,5 @@
 import { Play } from "lucide-react";
-import Carousel from "./Carousel";
+import Carousel from "../utils/Carousel";
 import { useNavigate } from "react-router-dom";
 
 export const Albums = ({ albums = [] }) => {

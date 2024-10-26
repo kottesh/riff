@@ -25,10 +25,10 @@ export const searchAPI = {
     },
 
     searchGenres: async (query) => {
-        const genres = await api.get(
+        const response = await api.get(
             `/api/genre?search=${encodeURIComponent(query)}`
         );
-        return genres.data || [];
+        return response.genres || [];
     },
 };
 
@@ -38,6 +38,16 @@ export async function getAlbumById(id) {
         return response;
     } catch (error) {
         console.log("Error in fetching album by id:", error.message);
+    }
+}
+
+export async function getGenreById(id) {
+    try {
+        const response = await api.get(`api/genre/${id}`);
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error("Error fetching genre by id: ", error.message);
     }
 }
 

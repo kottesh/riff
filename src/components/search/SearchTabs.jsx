@@ -1,5 +1,5 @@
 import React from "react";
-import useSearchStore from "../../store/useSearchStore";
+import useSearchStore from "../../store/use-search-store";
 
 const TabButton = ({ active, onClick, children }) => (
     <button

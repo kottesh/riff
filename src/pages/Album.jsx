@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Loader2, AlertCircle, Music } from "lucide-react";
-import useAlbum from "../hooks/useAlbum";
+import useAlbum from "../hooks/use-album";
 import InfoCard from "../components/album/InfoCard";
 import TrackList from "../components/album/TrackList";
 
@@ -41,7 +41,7 @@ export default function Album() {
             <div className="flex h-[calc(100vh-64px)] items-center justify-center px-4">
                 <div className="flex flex-col items-center text-center">
                     <Music className="w-16 h-16 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">
+                    <h3 className="text-lg font-bold text-white mb-2">
                         Album not found
                     </h3>
                     <p className="text-gray-400 max-w-md">
@@ -54,7 +54,7 @@ export default function Album() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-gray-900 to-black mr-20 mb-16">
+        <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-gray-900 to-black p-8 mr-20 mb-16">
             <div className="max-w-[1920px] mx-auto">
                 <div className="flex flex-col gap-8 pb-16">
                     <InfoCard album={album} />

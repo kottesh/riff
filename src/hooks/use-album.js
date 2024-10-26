@@ -3,7 +3,7 @@ import { getAlbumById } from "../services/data-api";
 
 export default function useAlbum(id) {
     const [album, setAlbum] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {

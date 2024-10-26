@@ -1,7 +1,7 @@
 import React from "react";
 import { Play, Pause, Clock, Music } from "lucide-react";
-import usePlayerStore from "../../store/usePlayerStore";
-import { formatDuration } from "../../utils/formatDuration";
+import usePlayerStore from "../../store/use-player-store";
+import { formatDuration } from "../../utils/format-duration";
 import { useNavigate } from "react-router-dom";
 
 const PlayingAnimation = () => (
@@ -61,11 +61,11 @@ const TrackList = ({ tracks = [] }) => {
                             <tr
                                 key={track.id}
                                 onClick={(e) => handlePlay(track, e)}
-                                className={`group hover:bg-white/5 transition-colors cursor-pointer
+                                className={`group hover:bg-white/5 transition-colors cursor-pointer rounded-lg
                                     ${isCurrentTrack ? "bg-white/10" : ""}
                                 `}
                             >
-                                <td className="w-16 py-2 text-center">
+                                <td className="w-16 py-2 text-center rounded-l-lg">
                                     <div className="w-full flex justify-center items-center h-12">
                                         {isCurrentlyPlaying ? (
                                             <PlayingAnimation />
@@ -117,7 +117,7 @@ const TrackList = ({ tracks = [] }) => {
                                         </div>
                                     </div>
                                 </td>
-                                <td className="w-16 py-2 text-right pr-2">
+                                <td className="w-16 py-2 text-right pr-2 rounded-r-lg">
                                     <span className="text-sm text-gray-400">
                                         {formatDuration(track.duration)}
                                     </span>

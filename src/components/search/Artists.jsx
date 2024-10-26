@@ -1,7 +1,10 @@
 import { Music } from "lucide-react";
-import Carousel from "./Carousel";
+import Carousel from "../utils/Carousel";
+import { useNavigate } from "react-router-dom";
 
 export const Artists = ({ artists = [] }) => {
+    const navigate = useNavigate();
+
     if (!artists.length) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
@@ -21,6 +24,9 @@ export const Artists = ({ artists = [] }) => {
                          bg-gray-800/30 hover:bg-gray-800/50 
                          transition-all duration-300 transform hover:scale-105
                          shadow-lg hover:shadow-xl"
+                            onClick={() => {
+                                navigate(`/artist/${artist.id}`);
+                            }}
                         >
                             <div
                                 className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-800

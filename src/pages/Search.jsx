@@ -6,7 +6,7 @@ import { Songs } from "../components/search/Songs";
 import { Albums } from "../components/search/Albums";
 import { Artists } from "../components/search/Artists";
 import { Genres } from "../components/search/Genres";
-import useSearchStore from "../store/useSearchStore";
+import useSearchStore from "../store/use-search-store";
 
 const EmptyState = ({ searchQuery }) => (
     <div className="flex flex-col items-center justify-center py-12">
@@ -92,7 +92,7 @@ const Search = () => {
     };
 
     return (
-        <div className="container mx-8 max-w-7xl px-4 pb-16">
+        <div className="container mx-8 max-w-8xl px-4 p-8 pb-16 mb-16">
             <SearchBar />
             {error && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">

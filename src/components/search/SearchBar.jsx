@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, X } from "lucide-react";
-import useSearchStore from "../../store/useSearchStore";
+import useSearchStore from "../../store/use-search-store";
 
 export const SearchBar = () => {
     const { searchQuery, setSearchQuery, clearSearch } = useSearchStore();
