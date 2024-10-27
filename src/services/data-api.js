@@ -34,6 +34,39 @@ export const searchAPI = {
     },
 };
 
+export const songsAPI = {
+    getSongsByArtist: async (id) => {
+        try {
+            const songs = await api.get(`/api/song/artist/${id}`);
+            return songs.tracks || [];
+        } catch (error) {
+            console.log("Failed fetching songs by artist : ", error.message);
+        }
+    },
+};
+
+export const artistAPI = {
+    getArtistById: async (id) => {
+        try {
+            const artist = await api.get(`api/artist/${id}`);
+            return artist.data || [];
+        } catch (error) {
+            console.log("Failed fetching artist by ID");
+        }
+    },
+};
+
+export const albumAPI = {
+    getAlbumsByArtist: async (id) =>{
+        try{
+            const albums = await api.get(`/api/album/artist/${id}`);
+            return albums.albums || [];
+        }catch(error){
+            console.log("Failed fetching albums by artist ID:",error.message)
+        }
+    }
+}
+
 export async function getAlbumById(id) {
     try {
         const response = await api.get(`api/album/${id}`);

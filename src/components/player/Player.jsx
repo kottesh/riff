@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import usePlayerStore from "../../store/usePlayerStore";
+import usePlayerStore from "../../store/use-player-store";
 import { Controls } from "./Controls";
 import { VolumeControl } from "./VolumeControl";
 import { ProgressBar } from "./ProgressBar";

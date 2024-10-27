@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Rewind, FastForward } from "lucide-react";
-import usePlayerStore from "../../store/usePlayerStore";
+import usePlayerStore from "../../store/use-player-store";
 
 const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

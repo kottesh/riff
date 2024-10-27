@@ -5,7 +5,7 @@ export default function ArtistInfo({ artist }) {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
         artist && (
-            <div className="w-3/4 p-6 bg-none rounded-lg">
+            <div className="w-full p-6 pl-12 bg-none rounded-lg">
                 {/* Top section for image and name */}
                 <div className="flex items-center mb-6">
                     {/* Image */}

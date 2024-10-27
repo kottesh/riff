@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { ListMusic , X, Trash2 } from "lucide-react";
-import usePlayerStore from "../../store/usePlayerStore";
+import usePlayerStore from "../../store/use-player-store";
 
 const QUEUE_STATES = {
     EXPANDED_WIDTH: "w-80",

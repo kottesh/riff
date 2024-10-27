@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import usePlayerStore from "../../store/usePlayerStore";
+import usePlayerStore from "../../store/use-player-store";
 import { Volume2, VolumeX, Volume1 } from "lucide-react";
 
 export const VolumeControl = () => {

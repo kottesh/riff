@@ -4,6 +4,7 @@ import ArtistSongs from "../components/artist/ArtistSongs";
 import ArtistAlbums from "../components/artist/ArtistAlbums";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { AlertCircle} from "lucide-react";
 import { artistAPI, songsAPI, albumAPI } from "../services/data-api";
 import { getDominantColor } from "../utils/extractColor";
 export default function Artist() {
@@ -61,7 +62,7 @@ export default function Artist() {
 
         
         if (artist) {
-            fetchColor(artist);
+            //fetchColor(artist);
         }
     }, [artist]); 
 
@@ -76,9 +77,9 @@ export default function Artist() {
                 rgba(24, 27, 34, 255) 100%
             )`,
             }}
-            className="w-3/4 h-fit rounded-lg rounded-b-none"
+            className="mr-28 mb-16 h-fit  mx-8 rounded-lg rounded-b-none"
         >
-            <div className="container mx-8 max-w-7xl px-4 pb-16">
+            <div className="container mx-8 my-8 max-w-7xl px-4 pb-16">
                 <ArtistInfo artist={artist} />
                 <ArtistSongs tracks={tracks} />
                 <ArtistAlbums albums={albums} color={themeColor}/>

@@ -13,6 +13,8 @@
     "@hello-pangea/dnd": "^17.0.0",
     "axios": "^1.7.7",
     "colorthief": "^2.6.0",
+    "data-fns": "^1.1.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^11.11.9",
     "lucide-react": "^0.453.0",
     "node-vibrant": "^3.1.6",

@@ -19,7 +19,7 @@ export default function ArtistAlbums({ albums = [], color }) {
     }
 
     return (
-        <div className="px-4 mt-14 mr-5 rounded-lg">
+        <div className="px-4 mt-14 mr-5 rounded-lg pl-12">
             <Carousel title="Albums">
                 {albums.map((album) => (
                     <div

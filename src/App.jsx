@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Album from "./pages/Album";
 import Genre from "./pages/Genre";
+import Artist from './pages/Artist'
 import Player from "./components/player/Player";
 import Queue from "./components/player/Queue";
 import Sidebar from "./components/SideBar";
