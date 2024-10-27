@@ -3,10 +3,11 @@ import usePlayerStore from "../../store/use-player-store";
 import { Controls } from "./Controls";
 import { VolumeControl } from "./VolumeControl";
 import { ProgressBar } from "./ProgressBar";
+import { useNavigate } from "react-router-dom";
 
 const Player = () => {
+    const navigate = useNavigate();
     const { currentTrack, initializeAudio } = usePlayerStore();
-
     useEffect(() => {
         initializeAudio();
     }, []);
@@ -43,15 +44,26 @@ const Player = () => {
                             </div>
                         )}
                     </div>
-
                     <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-left text-white truncate">
+                        <h3 className="font-bold text-left text-white truncate">
                             {currentTrack?.title || "No track selected"}
                         </h3>
                         <p className="text-sm text-left text-gray-400 truncate">
-                            {currentTrack?.artists
-                                ?.map((a) => a.name)
-                                .join(", ") || "Unknown artist"}
+                            {currentTrack?.artists?.map((artist, index) => (
+                                <React.Fragment key={artist.id}>
+                                    <span
+                                        className="hover:underline cursor-pointer"
+                                        onClick={() =>
+                                            navigate(`/artist/${artist.id}`)
+                                        }
+                                    >
+                                        {artist.name}
+                                    </span>
+                                    {index < currentTrack.artists.length - 1
+                                        ? ", "
+                                        : ""}
+                                </React.Fragment>
+                            )) || "Unknown artist"}
                         </p>
                     </div>
                 </div>

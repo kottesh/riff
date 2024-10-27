@@ -86,7 +86,7 @@ const GenreHeader = ({ genre }) => {
                         <p className="text-sm font-semibold tracking-wider text-gray-300">
                             Genre
                         </p>
-                        <h1 className="mt-1 text-5xl font-bold text-white">
+                        <h1 className="mt-1 text-5xl font-figtree font-bold text-white">
                             {genre.name}
                         </h1>
                         <div className="mt-3 flex items-center space-x-4">
