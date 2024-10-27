@@ -1,6 +1,4 @@
-import { SiComsol } from "react-icons/si";
-import { Songs } from "../components/search/Songs";
-import api from "./axios";
+import api from "../utils/axios";
 
 export const searchAPI = {
     searchTracks: async (query) => {
@@ -88,11 +86,8 @@ export async function getGenreById(id) {
 
 export async function getAllsongs() {
     try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/song`
-        );
-        const data = await response.json();
-        return data.tracks;
+        const response = await api.get("/api/song");
+        return response.tracks;
     } catch (error) {
         console.log("Fetching error (songs) : ", error.message);
     }
@@ -100,11 +95,8 @@ export async function getAllsongs() {
 
 export async function getAllgenres() {
     try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/genre`
-        );
-        const data = await response.json();
-        return data.genres;
+        const response = await api.get("/api/genre");
+        return response.genres;
     } catch (error) {
         console.log("Error in fetching genres:", error.message);
     }
@@ -112,11 +104,8 @@ export async function getAllgenres() {
 
 export async function getAllalbums() {
     try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/album`
-        );
-        const data = await response.json();
-        return data.album;
+        const response = await api.get("/api/album");
+        return response.data;
     } catch (error) {
         console.log("Error in fetching genres:", error.message);
     }
@@ -124,11 +113,8 @@ export async function getAllalbums() {
 
 export async function getArtistById(id) {
     try {
-        const response = await fetch(
-            `${import.meta.VITE_BACKEND_URL}/api/artist/${id}`
-        );
-        const data = await response.json();
-        return data;
+        const response = await api.get(`/api/artist/${id}`);
+        return response.data;
     } catch (error) {
         console.log("Error in fetching artist by id:", error.message);
     }

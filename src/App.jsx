@@ -16,15 +16,13 @@ const App = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // This will ensure the loading spinner shows until everything is loaded
         window.onload = () => {
             setIsLoading(false);
         };
 
-        // Fallback in case window.onload doesn't trigger
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 2000); // Adjust timeout as needed
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -36,7 +34,7 @@ const App = () => {
     return (
         <Router>
             <Suspense fallback={<LoadingSpinner />}>
-                <div className="flex h-screen bg-gradient-to-b from-gray-900 to-black">
+                <div className="font-figtree flex h-screen bg-gradient-to-b from-gray-900 to-black">
                     <Sidebar />
 
                     <div className="flex flex-col flex-1">

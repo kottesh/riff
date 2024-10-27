@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { ListMusic , X, Trash2 } from "lucide-react";
+import { ListMusic, X, Trash2 } from "lucide-react";
 import usePlayerStore from "../../store/use-player-store";
 
 const QUEUE_STATES = {
     EXPANDED_WIDTH: "w-80",
     COLLAPSED_WIDTH: "w-20",
-    TRANSITION_DURATION: "duration-300",
+    TRANSITION_DURATION: "duration-200",
 };
 
 const TrackImage = ({ src, alt, className }) => {
@@ -130,7 +130,7 @@ const CollapsedQueue = React.memo(({ tracks, currentTrackId, onPlay }) => (
         {tracks.map((track, index) => (
             <div
                 key={track.id}
-                className="relative rounded-md overflow-hidden hover:scale-110
+                className="relative rounded-md overflow-hidden scroll hover:scale-110
           transition-transform duration-200 cursor-pointer"
                 onClick={() => onPlay(index)}
             >
