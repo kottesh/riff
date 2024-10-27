@@ -54,6 +54,7 @@ export const artistAPI = {
             console.log("Failed fetching artist by ID");
         }
     },
+    
 };
 
 export const albumAPI = {
@@ -67,6 +68,7 @@ export const albumAPI = {
     }
 }
 
+
 export async function getAlbumById(id) {
     try {
         const response = await api.get(`api/album/${id}`);
@@ -79,7 +81,6 @@ export async function getAlbumById(id) {
 export async function getGenreById(id) {
     try {
         const response = await api.get(`api/genre/${id}`);
-        console.log(response);
         return response;
     } catch (error) {
         console.error("Error fetching genre by id: ", error.message);
@@ -100,11 +101,9 @@ export async function getAllsongs() {
 
 export async function getAllgenres() {
     try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/genre`
-        );
-        const data = await response.json();
-        return data.genres;
+        const response = await api.get(`/api/genre`);
+        console.log("Genres");
+        return response.genres || [];
     } catch (error) {
         console.log("Error in fetching genres:", error.message);
     }

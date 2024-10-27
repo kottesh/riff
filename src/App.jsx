@@ -3,8 +3,9 @@ import { Suspense, useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Album from "./pages/Album";
-import Genre from "./pages/Genre";
-import Artist from './pages/Artist'
+import SpecificGenre from "./pages/genre/SpecificGenre"
+import Genre from "./pages/genre/Genre";
+import Artist from "./pages/Artist";
 import Player from "./components/player/Player";
 import Queue from "./components/player/Queue";
 import Sidebar from "./components/SideBar";
@@ -45,13 +46,12 @@ const App = () => {
                                 <Route path="/" element={<Home />} />
                                 <Route path="/search" element={<Search />} />
                                 <Route path="/album/:id" element={<Album />} />
-                                <Route path="/genre/:id" element={<Genre />} />
+                                <Route path="/genre/:id" element={<SpecificGenre />} />
                                 <Route
                                     path="/artist/:id"
-                                    element={
-                                        <Artist />
-                                    }
+                                    element={<Artist />}
                                 />
+                                 <Route path="/genres" element={<Genre />} />
                                 <Route
                                     path="/library"
                                     element={<div>Library Page</div>}

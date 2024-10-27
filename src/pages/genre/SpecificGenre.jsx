@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import useGenre from "../hooks/use-genre";
-import GenreHeader from "../components/genre/GenreHeader";
-import GenreTrackList from "../components/genre/GenreTrackList";
-import LoadingState from "../components/utils/LoadingState";
-import ErrorState from "../components/utils/ErrorState";
+import useSpecificGenre from "../../hooks/use-specific-genre"
+import GenreHeader from "../../components/genre/GenreHeader";
+import GenreTrackList from "../../components/genre/GenreTrackList";
+import LoadingState from "../../components/utils/LoadingState";
+import ErrorState from "../../components/utils/ErrorState";
 
-const Genre = () => {
+const SpecificGenre = () => {
     const { id } = useParams();
-    const { genre, isLoading, error } = useGenre(id);
+    const { genre, isLoading, error } = useSpecificGenre(id);
 
     if (isLoading) {
         return <LoadingState />;
@@ -26,4 +26,4 @@ const Genre = () => {
     );
 };
 
-export default Genre;
+export default SpecificGenre;

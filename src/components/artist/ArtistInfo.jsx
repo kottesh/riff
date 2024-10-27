@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import { UserRound } from "lucide-react";
 export default function ArtistInfo({ artist }) {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
@@ -9,12 +9,19 @@ export default function ArtistInfo({ artist }) {
                 {/* Top section for image and name */}
                 <div className="flex items-center mb-6">
                     {/* Image */}
-                    <div className="flex-shrink-0">
-                        <img
+                    <div className="flex-shrink-0 rounded-full">
+                        { artist.image ?(
+                            <img
                             src={artist.image}
                             alt={artist.name}
                             className="w-52 h-52 shadow-md shadow-gray-800 rounded-full object-cover border-collapse hover:scale-105 transition-transform duration-500"
                         />
+                        ) :(
+                            <div className="w-full h-full flex items-center justify-center rounded-full p-2">
+                                <UserRound className="w-52 h-52 shadow-md text-gray-500 shadow-gray-800 rounded-full object-cover border-collapse hover:scale-105 transition-transform duration-500" />
+                            </div>
+                        )}
+                        
                     </div>
 
                     {/* Name */}
@@ -33,7 +40,7 @@ export default function ArtistInfo({ artist }) {
                                 {artist.bio.length > 400 && (
                                     <button
                                         onClick={() => setIsExpanded(true)}
-                                        className="text-gray-100 hover:text-gray-400 font-medium inline-flex items-center transition-colors duration-200"
+                                        className="text-purple-800 hover:text-purple-400 font-bold inline-flex items-center transition-colors duration-200"
                                     >
                                         MORE
                                     </button>
@@ -44,7 +51,7 @@ export default function ArtistInfo({ artist }) {
                                 {artist.bio}..
                                 <button
                                     onClick={() => setIsExpanded(false)}
-                                    className="text-gray-100 hover:text-gray-400 font-medium inline-flex items-center ml-1 transition-colors duration-200"
+                                    className="text-purple-800 hover:text-purple-400 font-bold inline-flex items-center ml-1 transition-colors duration-200"
                                 >
                                     LESS
                                 </button>

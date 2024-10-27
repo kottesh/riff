@@ -6,7 +6,9 @@ import { formatDuration } from "../../utils/format-duration";
 import { sortTracksByLatest } from "../../utils/sortTracks";
 import { useState } from "react";
 import { use } from "framer-motion/client";
-import { AlertCircle} from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { artistAPI } from "../../services/data-api";
+import { useNavigate } from "react-router-dom";
 
 export default function ArtistSongs({ tracks = [] }) {
     const { currentTrack, isPlaying, playTrack } = usePlayerStore();
@@ -14,7 +16,7 @@ export default function ArtistSongs({ tracks = [] }) {
     const [showAll, setShowAll] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const displayedTracks = showAll ? sortedTracks : sortedTracks.slice(0, 5);
-
+    const navigate = useNavigate();
     if (!sortedTracks.length) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
@@ -23,6 +25,10 @@ export default function ArtistSongs({ tracks = [] }) {
             </div>
         );
     }
+    const handleArtistClick = (artistId, e) => {
+        e.stopPropagation();
+        navigate(`/artist/${artistId}`);
+    };
 
     return (
         <div className="w-full px-4 pr-12 pl-12">
@@ -85,9 +91,29 @@ export default function ArtistSongs({ tracks = [] }) {
                                             {track.title}
                                         </h3>
                                         <p className="text-left font-medium text-sm text-gray-400 truncate">
-                                            {track.artists
-                                                ?.map((artist) => artist.name)
-                                                .join(", ")}
+                                            {track.artists?.map(
+                                                (artist, index) => (
+                                                    <React.Fragment
+                                                        key={artist.id}
+                                                    >
+                                                        <button
+                                                            onClick={(e) =>
+                                                                handleArtistClick(
+                                                                    artist.id,
+                                                                    e
+                                                                )
+                                                            }
+                                                            className="hover:text-white hover:underline transition-colors"
+                                                        >
+                                                            {artist.name}
+                                                        </button>
+                                                        {index <
+                                                            track.artists
+                                                                .length -
+                                                                1 && ", "}
+                                                    </React.Fragment>
+                                                )
+                                            )}
                                         </p>
                                     </div>
 
@@ -101,7 +127,7 @@ export default function ArtistSongs({ tracks = [] }) {
                     {sortedTracks.length > 5 && (
                         <button
                             onClick={() => setShowAll((prev) => !prev)}
-                            className="px-4 py-2 mt-5 text-sm text-white font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-black
+                            className="px-4 py-2 mt-5 text-sm text-white font-bold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-black
                         shrink-0
                     "
                         >
@@ -109,12 +135,11 @@ export default function ArtistSongs({ tracks = [] }) {
                         </button>
                     )}
                 </div>
-            ): (
+            ) : (
                 <div>
-                    <AlertCircle  className="h-5 w-5"/>
+                    <AlertCircle className="h-5 w-5" />
                 </div>
             )}
-            
         </div>
     );
 }

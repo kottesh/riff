@@ -1,36 +1,24 @@
-import { useState, useEffect } from "react";
-import { getGenreById } from "../services/data-api";
+import React, { useEffect, useState } from 'react'
+import { getAllgenres } from '../services/data-api';
 
-const useGenre = (id) => {
-    const [genre, setGenre] = useState(null);
+export default function useGenre(){
+    const [ genre, setGenre] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
+    const [err, setError] = useState(null);
+    useEffect(()=>{
         setIsLoading(true);
-        const fetchGenre = async () => {
-            try {
-                const response = await getGenreById(id);
-                if (response.genre) {
-                    setGenre(response.genre);
-                } else {
-                    setError("No genre data received");
-                }
-            } catch (error) {
-                console.error("Error fetching genre: ", error);
-                setError(error?.response?.message || "Failed to load genre");
-            } finally {
+        const fetchGenres = async() =>{
+            try{
+                const genre = await getAllgenres();
+                setGenre(genre);
+            }catch(err){
+                console.log("Error in API call : ",err.message);
+                setError(err);
+            }finally{
                 setIsLoading(false);
             }
-        };
-        if (id) fetchGenre();
-        else {
-            setError("No genre ID provided");
-            setIsLoading(false);
         }
-    }, [id]);
-
-    return { genre, isLoading, error };
-};
-
-export default useGenre;
+        fetchGenres();
+    },[])
+    return { genre, isLoading, err };
+}

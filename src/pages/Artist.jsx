@@ -2,71 +2,81 @@ import React from "react";
 import ArtistInfo from "../components/artist/artistInfo";
 import ArtistSongs from "../components/artist/ArtistSongs";
 import ArtistAlbums from "../components/artist/ArtistAlbums";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { AlertCircle} from "lucide-react";
-import { artistAPI, songsAPI, albumAPI } from "../services/data-api";
-import { getDominantColor } from "../utils/extractColor";
+import LoadingSpinner from "../components/utils/LoadingSpinner";
+//import { getDominantColor } from "../utils/extractColor";
+import { useArtist } from "../hooks/use-artist";
+import { UserRound } from "lucide-react";
 export default function Artist() {
-    const { id } = useParams();
-    const [tracks, setTracks] = useState([]);
-    const [ albums, setAlbums ] =useState();
-    const [artist, setArtist] = useState(null);
-    const [themeColor, setThemeColor] = useState(null);
-    useEffect(() => {
-        const fetchArtist = async (id) => {
-            try {
-                const art = await artistAPI.getArtistById(id);
-                setArtist(art);
-            } catch (error) {
-                console.log(
-                    "Error fetching data from API call (Artist by Id) : ",
-                    error.message
-                );
-            }
-        };
-        const fetchSongs = async (id) => {
-            try {
-                const songs = await songsAPI.getSongsByArtist(id);
-                setTracks(songs);
-            } catch (error) {
-                console.log("Error fetching from API call (songs by artist):", error.message);
-            }
-        };
-        const fetchAlbums = async (id) =>{
-            try{
-                const albs = await albumAPI.getAlbumsByArtist(id);
-                setAlbums(albs);
-            }catch(error){
-                console.log("Error fetching from API call (albums by artist):", error.message);
-            }
-        }
-
-        fetchArtist(id);
-        fetchSongs(id);
-        fetchAlbums(id);
-    }, [id]);
     
-    useEffect(() => {
-        const fetchColor = async (artist) => {
-            try {
-                if (artist && artist.image) {
-                    const dominantColor = await getDominantColor(artist.image);
-                    setThemeColor(dominantColor);
-                    console.log("Dominant Color:", dominantColor);
-                }
-            } catch (error) {
-                console.error("Failed to get dominant color:", error);
-            }
-        };
+    const [themeColor, setThemeColor] = useState(null);
+    const { id } = useParams();
+    const { artist, tracks, albums, isLoading, error } = useArtist(id);
+
+    // useEffect(() => {
+    //     const fetchColor = async (artist) => {
+    //         try {
+    //             if (artist && artist.image) {
+    //                 const dominantColor = await getDominantColor(artist.image);
+    //                 setThemeColor(dominantColor);
+    //                 console.log("Dominant Color:", dominantColor);
+    //             }
+    //         } catch (error) {
+    //             console.error("Failed to get dominant color:", error);
+    //         }
+    //     };
 
         
-        if (artist) {
-            //fetchColor(artist);
-        }
-    }, [artist]); 
+    //     if (artist) {
+    //         //fetchColor(artist);
+    //     }
+    // }, [artist]); 
 
-    console.log("Songs by artist from page ",tracks);
+    if (isLoading) {
+        return (
+            <div className="flex h-[calc(100vh-64px)] items-center justify-center">
+                <LoadingSpinner className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+        );
+    }
+    if (error) {
+        return (
+            <div className="flex h-[calc(100vh-64px)] items-center justify-center px-4">
+                <div className="max-w-md w-full bg-red-500/10 border border-red-500/20 rounded-lg p-6">
+                    <div className="flex items-center gap-3">
+                        <AlertCircle className="h-6 w-6 text-red-400 flex-shrink-0" />
+                        <div>
+                            <h3 className="text-lg font-medium text-red-400">
+                                Error loading artist
+                            </h3>
+                            <p className="mt-1 text-sm text-red-400/80">
+                                {error}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!artist) {
+        return (
+            <div className="flex h-[calc(100vh-64px)] items-center justify-center px-4">
+                <div className="flex flex-col items-center text-center">
+                    <UserRound className="w-16 h-16 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">
+                        Artist not found
+                    </h3>
+                    <p className="text-gray-400 max-w-md">
+                        The artist you're looking for might have been removed or
+                        is temporarily unavailable.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             style={{
@@ -79,11 +89,17 @@ export default function Artist() {
             }}
             className="mr-28 mb-16 h-fit  mx-8 rounded-lg rounded-b-none"
         >
-            <div className="container mx-8 my-8 max-w-7xl px-4 pb-16">
+            { isLoading ? (
+                <div>
+
+                </div>
+            ):(
+                <div className="container mx-8 my-8 max-w-7xl px-4 pb-16">
                 <ArtistInfo artist={artist} />
                 <ArtistSongs tracks={tracks} />
                 <ArtistAlbums albums={albums} color={themeColor}/>
             </div>
+            )}
         </div>
     );
 }

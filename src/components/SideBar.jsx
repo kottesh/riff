@@ -19,7 +19,7 @@ const CustomTooltip = ({ children, content }) => {
             </div>
             {isVisible && (
                 <div
-                    className="absolute left-full ml-2 px-2 py-1 bg-gray-900/95 backdrop-blur-sm text-white text-sm rounded whitespace-nowrap z-50"
+                    className="absolute left-full ml-1 px-2 py-1 bg-gray-900/95 backdrop-blur-sm text-white text-sm rounded whitespace-nowrap z-50"
                     style={{ top: "50%", transform: "translateY(-50%)" }}
                 >
                     {content}
