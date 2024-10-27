@@ -1,5 +1,5 @@
 import React from "react";
-import ArtistInfo from "../components/artist/artistInfo";
+import ArtistInfo from "../components/artist/ArtistInfo";
 import ArtistSongs from "../components/artist/ArtistSongs";
 import ArtistAlbums from "../components/artist/ArtistAlbums";
 import { useState } from "react";
@@ -97,7 +97,7 @@ export default function Artist() {
                 <div className="container mx-8 my-8 max-w-7xl px-4 pb-16">
                 <ArtistInfo artist={artist} />
                 <ArtistSongs tracks={tracks} />
-                <ArtistAlbums albums={albums} color={themeColor}/>
+                <ArtistAlbums albums={albums} color={themeColor} />
             </div>
             )}
         </div>

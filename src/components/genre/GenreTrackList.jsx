@@ -14,7 +14,7 @@ const GenreTrackList = ({ tracks }) => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
+        <div className="max-w-7xl mx-auto pb-16 px-4 sm:px-6 lg:px-8 pt-2">
             <div className="space-y-2">
                 {tracks?.map((track) => (
                     <TrackItem

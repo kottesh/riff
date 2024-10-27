@@ -35,7 +35,7 @@ const App = () => {
     return (
         <Router>
             <Suspense fallback={<LoadingSpinner />}>
-                <div className="font-figtree flex h-screen bg-gradient-to-b from-gray-900 to-black">
+                <div className="font-figtree flex h-screen bg-gradient-to-b from-gray-900 to-black overflow-hidden">
                     <Sidebar />
 
                     <div className="flex flex-col flex-1">
@@ -65,7 +65,7 @@ const App = () => {
                             </Routes>
                         </main>
 
-                        <div className="sticky bottom-0 bg-black border-t border-gray-800">
+                        <div className="flex-shrink-0 relative z-50 bg-black border-t border-gray-800">
                             <div className="flex">
                                 <div className="flex-1">
                                     <Player />

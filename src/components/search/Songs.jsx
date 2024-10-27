@@ -1,6 +1,7 @@
 import React from "react";
 import { Music, Play, Pause } from "lucide-react";
 import usePlayerStore from "../../store/use-player-store";
+import { useNavigate } from "react-router-dom";
 
 const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -10,6 +11,12 @@ const formatDuration = (seconds) => {
 
 export const Songs = ({ tracks = [] }) => {
     const { currentTrack, isPlaying, playTrack } = usePlayerStore();
+    const navigate = useNavigate();
+
+    const handleArtistClick = (artistId, e) => {
+        e.stopPropagation();
+        navigate(`/artist/${artistId}`);
+    };
 
     if (!tracks.length) {
         return (
@@ -79,9 +86,23 @@ export const Songs = ({ tracks = [] }) => {
                                     {track.title}
                                 </h3>
                                 <p className="text-left font-medium text-sm text-gray-400 truncate">
-                                    {track.artists
-                                        ?.map((artist) => artist.name)
-                                        .join(", ")}
+                                    {track.artists?.map((artist, index) => (
+                                        <React.Fragment key={artist.id}>
+                                            <button
+                                                onClick={(e) =>
+                                                    handleArtistClick(
+                                                        artist.id,
+                                                        e
+                                                    )
+                                                }
+                                                className="hover:text-white hover:underline transition-colors"
+                                            >
+                                                {artist.name}
+                                            </button>
+                                            {index < track.artists.length - 1 &&
+                                                ", "}
+                                        </React.Fragment>
+                                    ))}
                                 </p>
                             </div>
 

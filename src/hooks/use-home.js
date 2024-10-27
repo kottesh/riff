@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getAllsongs, getAllalbums, searchAPI } from "../services/data-api";
+import { getAllsongs, getAllAlbums, artistAPI } from "../services/data-api";
 
-export const useHomeData = () => {
+export const useHome = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [data, setData] = useState({
@@ -18,8 +18,8 @@ export const useHomeData = () => {
 
                 const [tracks, albums, artists] = await Promise.all([
                     getAllsongs(),
-                    getAllalbums(),
-                    searchAPI.searchArtists(""),
+                    getAllAlbums(),
+                    artistAPI.getAllArtist(),
                 ]);
 
                 // TODO: setup the users and replace this with the users recent data.

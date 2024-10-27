@@ -1,9 +1,8 @@
-//*** Check for artist name it is not displaying ***//
 import React from "react";
 import usePlayerStore from "../../store/use-player-store";
 import { Music, Play, Pause } from "lucide-react";
 import { formatDuration } from "../../utils/format-duration";
-import { sortTracksByLatest } from "../../utils/sortTracks";
+import { sortTracksByLatest } from "../../utils/sort-tracks";
 import { useState } from "react";
 import { use } from "framer-motion/client";
 import { AlertCircle } from "lucide-react";
