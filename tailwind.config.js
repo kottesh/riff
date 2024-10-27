@@ -26,25 +26,29 @@ export default {
                 raleway: ["Raleway", "sans-serif"],
                 figtree: ["Figtree", "sans-serif"],
             },
-            animation: {
-                "marquee" : "marquee 10s linear infinite",
-                "music-bar-1": "music-bar-1 1s ease-in-out infinite",
-                "music-bar-2": "music-bar-2 1s ease-in-out infinite",
-                "music-bar-3": "music-bar-3 1s ease-in-out infinite",
-            },
             keyframes: {
                 "music-bar-1": {
-                    "0%, 100%": { height: "4px" },
-                    "50%": { height: "12px" },
-                },
-                "music-bar-2": {
-                    "0%, 100%": { height: "12px" },
-                    "50%": { height: "4px" },
-                },
-                "music-bar-3": {
                     "0%, 100%": { height: "8px" },
                     "50%": { height: "16px" },
                 },
+                "music-bar-2": {
+                    "0%, 100%": { height: "16px" },
+                    "50%": { height: "8px" },
+                },
+                "music-bar-3": {
+                    "0%, 100%": { height: "12px" },
+                    "50%": { height: "20px" },
+                },
+                "music-bar-4": {
+                    "0%, 100%": { height: "20px" },
+                    "50%": { height: "12px" },
+                },
+            },
+            animation: {
+                "music-bar-1": "music-bar-1 1s ease-in-out infinite",
+                "music-bar-2": "music-bar-2 1s ease-in-out infinite",
+                "music-bar-3": "music-bar-3 1s ease-in-out infinite",
+                "music-bar-4": "music-bar-4 1s ease-in-out infinite",
             },
         },
     },

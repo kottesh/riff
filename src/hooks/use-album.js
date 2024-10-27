@@ -1,26 +1,28 @@
 import { useState, useEffect } from "react";
-import axios from "../services/axios";
+import { getAlbumById } from "../services/data-api";
 
-export const useAlbum = (id) => {
+export default function useAlbum(id) {
     const [album, setAlbum] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchAlbum = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`http://localhost:3000/api/album/${id}`);
-                setAlbum(response.data);
+                const data = await getAlbumById(id);
+                setAlbum(data);
             } catch (err) {
-                setError(err.message);
+                setError(err);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchAlbum();
+        if (id) {
+            fetchAlbum();
+        }
     }, [id]);
 
     return { album, isLoading, error };
-};
+}

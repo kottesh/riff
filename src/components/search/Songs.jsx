@@ -1,6 +1,6 @@
 import React from "react";
 import { Music, Play, Pause } from "lucide-react";
-import usePlayerStore from "../../store/usePlayerStore";
+import usePlayerStore from "../../store/use-player-store";
 
 const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);

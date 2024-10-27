@@ -27,43 +27,76 @@ export const searchAPI = {
     },
 
     searchGenres: async (query) => {
-        const genres = await api.get(
+        const response = await api.get(
             `/api/genre?search=${encodeURIComponent(query)}`
         );
-        return genres.data || [];
+        return response.genres || [];
     },
 };
 
-export const songsAPI = {
-    getSongsByArtist: async (id) => {
-        try {
-            const songs = await api.get(`/api/song/artist/${id}`);
-            return songs.tracks || [];
-        } catch (error) {
-            console.log("Failed fetching songs by artist : ", error.message);
-        }
-    },
-};
-
-export const artistAPI = {
-    getArtistById: async (id) => {
-        try {
-            const artist = await api.get(`api/artist/${id}`);
-            return artist.data || [];
-        } catch (error) {
-            console.log("Failed fetching artist by ID");
-        }
-    },
-};
-
-export const albumAPI = {
-    getAlbumsByArtist: async (id) =>{
-        try{
-            const albums = await api.get(`/api/album/artist/${id}`);
-            return albums.albums || [];
-        }catch(error){
-            console.log("Failed fetching albums by artist ID:",error.message)
-        }
+export async function getAlbumById(id) {
+    try {
+        const response = await api.get(`api/album/${id}`);
+        return response;
+    } catch (error) {
+        console.log("Error in fetching album by id:", error.message);
     }
 }
 
+export async function getGenreById(id) {
+    try {
+        const response = await api.get(`api/genre/${id}`);
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error("Error fetching genre by id: ", error.message);
+    }
+}
+
+export async function getAllsongs() {
+    try {
+        const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/song`
+        );
+        const data = await response.json();
+        return data.tracks;
+    } catch (error) {
+        console.log("Fetching error (songs) : ", error.message);
+    }
+}
+
+export async function getAllgenres() {
+    try {
+        const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/genre`
+        );
+        const data = await response.json();
+        return data.genres;
+    } catch (error) {
+        console.log("Error in fetching genres:", error.message);
+    }
+}
+
+export async function getAllalbums() {
+    try {
+        const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/album`
+        );
+        const data = await response.json();
+        return data.album;
+    } catch (error) {
+        console.log("Error in fetching genres:", error.message);
+    }
+}
+
+export async function getArtistById(id) {
+    try {
+        const response = await fetch(
+            `${import.meta.VITE_BACKEND_URL}/api/artist/${id}`
+        );
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log("Error in fetching artist by id:", error.message);
+    }
+}
