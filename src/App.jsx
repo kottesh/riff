@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Album from "./pages/Album";
+import Artist from "./pages/Artist";
 import Player from "./components/player/Player";
 import Queue from "./components/player/Queue";
 import Sidebar from "./components/SideBar";
@@ -20,6 +21,7 @@ const App = () => {
                             <Route path="/" element={<Home />} />
                             <Route path="/search" element={<Search />} />
                             <Route path="/album/:id" element={<Album />} />
+                            <Route path="/artist/:id" element={<Artist />} />
                             <Route
                                 path="/library"
                                 element={<div>Library Page</div>}
