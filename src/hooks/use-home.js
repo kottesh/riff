@@ -29,7 +29,7 @@ export const useHome = () => {
                     recentTracks: recentTracks,
                     featuredTracks: tracks ? tracks.slice(0, 10) : [],
                     popularAlbums: albums ? albums.slice(0, 12) : [],
-                    popularArtists: artists ? artists.slice(0, 12) : [],
+                    popularArtists: artists ? artists.slice(0, 24) : [],
                 });
             } catch (err) {
                 setError(err.message);
